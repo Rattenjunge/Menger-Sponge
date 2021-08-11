@@ -44,7 +44,7 @@ public class UIManager : MonoBehaviour
 
 
   
-    private void Start()
+    private void Awake()
     {
         OnCubeCountChange += UpdateCubeCountUI;
     }
