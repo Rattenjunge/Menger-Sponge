@@ -51,7 +51,7 @@ public class UIManager : MonoBehaviour
 
     private void UpdateCubeCountUI(int newCubeCount)
     {
-        cubeCountText.text = "Cube Count =" + " " + newCubeCount;
+        cubeCountText.text = "Cube Count = " + newCubeCount;
     }
 
     public void IterationsChanged()
