@@ -4,27 +4,24 @@ using UnityEngine;
 
 public class MengerSponge : MonoBehaviour
 {
-    [SerializeField] private GameObject prefab;
+    [SerializeField] private GameObject cubePrefab;
     [SerializeField] private float size = 300f;
-    [SerializeField] private int iterations = 4;
-    [SerializeField] private List<GameObject> cubes = new List<GameObject>();
+    [SerializeField] private int iterations = 3;
     [SerializeField] private UIManager uiManager;
+    private List<GameObject> cubes = new List<GameObject>();
     private void Start()
     {
-
-        //first cube
-       
+        //create once each start
         CreateMengerBox(iterations, false);
     }
 
-
-    private List<GameObject> Split(List<GameObject> cubes, bool Inverse)
+    private List<GameObject> Split(List<GameObject> cubes, bool inverse)
     {
         //for the first split, there is just once cube
         List<GameObject> tempCubes = new List<GameObject>();
         foreach (var cube in cubes)
         {
-            //take the size of the cube, then cut the cube in 27 equal big cubes (example Vector3(1,1,1), Vector3(2,1,1).... up to Vector3(3,3,3)
+            //take the size of the cube, then cut the cube in 27 equal big cubes (example Vector3(-1,-1,-1), Vector3(1,0,0).... up to Vector3(1,1,1)
             float size = cube.GetComponent<MengerBox>().size;
 
             for (int x = -1; x < 2; x++)
@@ -42,10 +39,11 @@ public class MengerSponge : MonoBehaviour
 
                         //check if the cube is in the middle of the the bigger cube (example (Abs(-1)+Abs(-1)+Abs(-1) = 3 good, abs(0)+abs(0)+abs(-1) = 1 bad)
                         int sum = Mathf.Abs(x) + Mathf.Abs(y) + Mathf.Abs(z);
-                        if (Inverse)
+                        //check if menger sponge is wanted or (kinda) inverse
+                        if (inverse)
                         {
 
-                            if ((x == 0 && (y == 0 || z == 0)) || y == 0 && (x == 0 || z == 0) || (x == 0 && y == 0 && z == 0))
+                            if ((x == 0 && (y == 0 || z == 0)) || y == 0 && (x == 0 || z == 0) || (x == 0 && y == 0 && z == 0)) 
                             {
                                 //intantiate the good new cubes
                                 GameObject copy = Instantiate(cube, cubePos, Quaternion.identity);
@@ -58,7 +56,7 @@ public class MengerSponge : MonoBehaviour
                         }
                         else
                         {
-                            if (sum > 1)
+                            if (sum > 1)  
                             {
                                 //intantiate the good new cubes
                                 GameObject copy = Instantiate(cube, cubePos, Quaternion.identity);
@@ -74,36 +72,36 @@ public class MengerSponge : MonoBehaviour
                 }
             }
         }
-
         return tempCubes;
     }
 
-    public void CreateMengerBox(int Iterations, bool Inverse)
-    {
-        if(cubes.Count > 0)
-        {
-            foreach (var OldCube in cubes)
-            {
-                Destroy(OldCube);
-            }
-            cubes.Clear();
-        }
-        GameObject cube = Instantiate(prefab, new Vector3(0, 0, 0), Quaternion.identity);
-        cube.transform.localScale = new Vector3(size, size, size);
-        cube.GetComponent<MengerBox>().size = size;
-        cubes.Add(cube);
-        for (int i = 0; i < Iterations; i++)
-        {
-            List<GameObject> newCubes = Split(cubes, Inverse);
-            //destroy all old cubes
-            foreach (var OldCube in cubes)
-            {
-                Destroy(OldCube);
-            }
 
-            cubes = newCubes;
+    public void CreateMengerBox(int iterations, bool inverse)
+{
+    if (cubes.Count > 0)
+    {
+        foreach (var OldCube in cubes)
+        {
+            Destroy(OldCube);
         }
-        uiManager.CubeCount = cubes.Count;
+        cubes.Clear();
     }
+    GameObject cube = Instantiate(cubePrefab, Vector3.zero, Quaternion.identity);
+    cube.transform.localScale = new Vector3(size, size, size);
+    cube.GetComponent<MengerBox>().size = size;
+    cubes.Add(cube);
+    for (int i = 0; i < iterations; i++)
+    {
+        List<GameObject> newCubes = Split(cubes, inverse);
+        //destroy all old cubes
+        foreach (GameObject oldCube in cubes)
+        {
+            Destroy(oldCube);
+        }
+
+        cubes = newCubes;
+    }
+    uiManager.CubeCount = cubes.Count;
+}
 }
 

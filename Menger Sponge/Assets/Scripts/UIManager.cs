@@ -6,25 +6,19 @@ using UnityEngine.UI;
 using TMPro;
 public class UIManager : MonoBehaviour
 {
+    public delegate void OnCubeCountChangeDel(int newCubeCount);
+    public event OnCubeCountChangeDel OnCubeCountChange;
+
     [SerializeField] private TextMeshProUGUI cubeCountText;
     [SerializeField] private Slider iterationsSl;
     [SerializeField] private TextMeshProUGUI iterationsText;
     [SerializeField] private MengerSponge mengerSpronge;
     [SerializeField] private Toggle inverseToggle;
+
     [Range(1, 6)]
-    private int iterations = 4;
-    public int Iterations
-    {
-        get { return iterations; }
-
-        set
-        {
-            if (iterations == value) return;
-            iterations = value;
-
-        }
-    }
+    private int iterations = 3;
     private int cubeCount = 0;
+
     public int CubeCount
     {
         get { return cubeCount; }
@@ -39,11 +33,17 @@ public class UIManager : MonoBehaviour
             }
         }
     }
-    public delegate void OnCubeCountChangeDel(int newCubeCount);
-    public event OnCubeCountChangeDel OnCubeCountChange;
+    public int Iterations
+    {
+        get { return iterations; }
+
+        set
+        {
+            iterations = value;
+        }
+    }
 
 
-  
     private void Awake()
     {
         OnCubeCountChange += UpdateCubeCountUI;
@@ -63,5 +63,17 @@ public class UIManager : MonoBehaviour
     public void CreateNewMengerSponge()
     {
         mengerSpronge.CreateMengerBox(iterations, inverseToggle.isOn);
+    }
+
+
+    public void CloseGame()
+    {
+        Application.Quit();
+    }
+
+
+    private void OnDestroy()
+    {
+        OnCubeCountChange -= UpdateCubeCountUI;
     }
 }
